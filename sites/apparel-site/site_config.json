@@ -1,0 +1,14 @@
+{
+ "db_name": "_9e4e7f14c0c45490",
+ "db_password": "xi7PDtw7LPKH3wpE",
+ "db_type": "mariadb",
+ "db_user": "_9e4e7f14c0c45490",
+ "developer_mode": 1,
+ "installed_apps": [
+  "frappe",
+  "payments",
+  "erpnext",
+  "hrms",
+  "apparel_track"
+ ]
+}

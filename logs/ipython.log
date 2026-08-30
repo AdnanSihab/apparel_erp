@@ -1,0 +1,118 @@
+2026-08-30 14:21:08,790 INFO ipython === bench console session ===
+2026-08-30 14:21:08,790 INFO ipython import frappe
+2026-08-30 14:21:08,790 INFO ipython print(frappe.db.exists('Company', 'Wind Power'))
+2026-08-30 14:21:08,790 INFO ipython print(frappe.db.exists('Warehouse', 'Stores'))
+2026-08-30 14:21:08,790 INFO ipython print(frappe.db.exists('Supplier', 'Test Supplier'))
+2026-08-30 14:21:08,790 INFO ipython === session end ===
+2026-08-30 14:21:59,181 INFO ipython === bench console session ===
+2026-08-30 14:21:59,182 INFO ipython import frappe
+2026-08-30 14:21:59,182 INFO ipython from frappe.utils import nowdate, add_days
+2026-08-30 14:21:59,182 INFO ipython company = frappe.get_all('Company', limit=1)
+2026-08-30 14:21:59,182 INFO ipython if not company:
+    raise RuntimeError('No Company found in site. Please create a company first.')
+company_name = company[0].name
+2026-08-30 14:21:59,182 INFO ipython supplier_name = 'Apparel Supplier Demo'
+2026-08-30 14:21:59,182 INFO ipython if not frappe.db.exists('Supplier', supplier_name):
+    s = frappe.new_doc('Supplier')
+    s.supplier_name = supplier_name
+    s.supplier_group = 'Services'
+    s.insert(ignore_permissions=True)
+2026-08-30 14:21:59,183 INFO ipython warehouse_name = 'Raw Fabric Store'
+2026-08-30 14:21:59,183 INFO ipython if not frappe.db.exists('Warehouse', warehouse_name):
+    w = frappe.new_doc('Warehouse')
+    w.warehouse_name = warehouse_name
+    w.company = company_name
+    w.parent_warehouse = 'All Warehouses'
+    w.insert(ignore_permissions=True)
+2026-08-30 14:21:59,183 INFO ipython item_code = 'FAB-RAW-100D'
+2026-08-30 14:21:59,183 INFO ipython if not frappe.db.exists('Item', item_code):
+    item = frappe.new_doc('Item')
+    item.item_code = item_code
+    item.item_name = 'Cotton Fabric 100D'
+    item.item_group = 'Raw Fabric'
+    item.stock_uom = 'Nos'
+    item.is_stock_item = 1
+    item.has_batch_no = 1
+    item.create_new_batch = 1
+    item.valuation_method = 'FIFO'
+    item.insert(ignore_permissions=True)
+2026-08-30 14:21:59,183 INFO ipython if not frappe.db.exists('Batch', {'item': item_code, 'batch_id': 'DYE-LOT-001'}):
+    batch = frappe.new_doc('Batch')
+    batch.batch_id = 'DYE-LOT-001'
+    batch.item = item_code
+    batch.item_name = 'Cotton Fabric 100D'
+    batch.custom_dye_lot_number = 'DYE-LOT-001'
+    batch.custom_roll_length_meters = 1200
+    batch.insert(ignore_permissions=True)
+2026-08-30 14:21:59,183 INFO ipython if not frappe.db.exists('Item Reorder', {'item_code': item_code, 'warehouse': warehouse_name}):
+    ir = frappe.new_doc('Item Reorder')
+    ir.item_code = item_code
+    ir.warehouse = warehouse_name
+    ir.reorder_level = 20
+    ir.reorder_qty = 50
+    ir.custom_dynamic_lead_time_days = 7
+    ir.custom_safety_stock_qty = 10
+    ir.insert(ignore_permissions=True)
+2026-08-30 14:21:59,183 INFO ipython # ensure actual qty is below reorder level by creating zero-stock Bin if needed
+2026-08-30 14:21:59,183 INFO ipython bin_name = frappe.db.get_value('Bin', {'item_code': item_code, 'warehouse': warehouse_name})
+2026-08-30 14:21:59,183 INFO ipython if not bin_name:
+    frappe.get_doc({
+        'doctype': 'Bin',
+        'item_code': item_code,
+        'warehouse': warehouse_name,
+        'actual_qty': 0,
+        'reserved_qty': 0,
+        'ordered_qty': 0,
+        'planned_qty': 0,
+        'projected_qty': 0,
+    }).insert(ignore_permissions=True)
+2026-08-30 14:21:59,183 INFO ipython po = frappe.new_doc('Purchase Order')
+2026-08-30 14:21:59,183 INFO ipython po.company = company_name
+2026-08-30 14:21:59,183 INFO ipython po.supplier = supplier_name
+2026-08-30 14:21:59,183 INFO ipython po.transaction_date = nowdate()
+2026-08-30 14:21:59,183 INFO ipython po.schedule_date = nowdate()
+2026-08-30 14:21:59,183 INFO ipython po.append('items', {
+    'item_code': item_code,
+    'qty': 50,
+    'rate': 20,
+    'warehouse': warehouse_name,
+    'schedule_date': nowdate(),
+})
+2026-08-30 14:21:59,184 INFO ipython po.insert(ignore_permissions=True)
+2026-08-30 14:21:59,184 INFO ipython po.submit()
+2026-08-30 14:21:59,184 INFO ipython pr = frappe.new_doc('Purchase Receipt')
+2026-08-30 14:21:59,184 INFO ipython pr.company = company_name
+2026-08-30 14:21:59,184 INFO ipython pr.supplier = supplier_name
+2026-08-30 14:21:59,184 INFO ipython pr.posting_date = add_days(nowdate(), 5)
+2026-08-30 14:21:59,184 INFO ipython pr.append('items', {
+    'item_code': item_code,
+    'qty': 50,
+    'rate': 20,
+    'warehouse': warehouse_name,
+    'batch_no': 'DYE-LOT-001',
+    'purchase_order': po.name,
+    'purchase_order_item': po.items[0].name,
+})
+2026-08-30 14:21:59,184 INFO ipython pr.insert(ignore_permissions=True)
+2026-08-30 14:21:59,184 INFO ipython pr.submit()
+2026-08-30 14:21:59,184 INFO ipython # run the daily reorder job
+2026-08-30 14:21:59,184 INFO ipython from apparel_track.apparel_track.reorder_engine import process_reorder_engine
+2026-08-30 14:21:59,184 INFO ipython process_reorder_engine()
+2026-08-30 14:21:59,184 INFO ipython scorecard = frappe.get_all('Supplier Scorecard', filters={'supplier': supplier_name}, fields=['name', 'supplier', 'actual_average_lead_time_days', 'reliability_score'], limit=1)
+2026-08-30 14:21:59,184 INFO ipython mr = frappe.get_all('Material Request', filters={'docstatus': 0, 'custom_generated_by': 'Auto-Reorder Script'}, fields=['name', 'material_request_type', 'custom_generated_by'], limit=1)
+2026-08-30 14:21:59,184 INFO ipython print('COMPANY:', company_name)
+2026-08-30 14:21:59,184 INFO ipython print('WHS:', warehouse_name)
+2026-08-30 14:21:59,185 INFO ipython print('SUPPLIER:', supplier_name)
+2026-08-30 14:21:59,185 INFO ipython print('ITEM:', item_code)
+2026-08-30 14:21:59,185 INFO ipython print('P0:', po.name, 'status', po.docstatus)
+2026-08-30 14:21:59,185 INFO ipython print('PR:', pr.name, 'status', pr.docstatus)
+2026-08-30 14:21:59,185 INFO ipython print('SCORECARD:', scorecard)
+2026-08-30 14:21:59,185 INFO ipython print('MR:', mr)
+2026-08-30 14:21:59,185 INFO ipython === session end ===
+2026-08-30 14:23:56,725 INFO ipython === bench console session ===
+2026-08-30 14:23:56,725 INFO ipython import frappe
+2026-08-30 14:23:56,725 INFO ipython print('Contact meta fields sample:', [f.fieldname for f in frappe.get_meta('Contact').fields[:20]])
+2026-08-30 14:23:56,725 INFO ipython print('is_billing_contact in meta?', any(f.fieldname=='is_billing_contact' for f in frappe.get_meta('Contact').fields))
+2026-08-30 14:23:56,725 INFO ipython print('columns:', frappe.db.get_table_columns('tabContact')[:20])
+2026-08-30 14:23:56,725 INFO ipython print('has is_billing_contact column?', 'is_billing_contact' in frappe.db.get_table_columns('tabContact'))
+2026-08-30 14:23:56,725 INFO ipython === session end ===
