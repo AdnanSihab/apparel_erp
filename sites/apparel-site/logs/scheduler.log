@@ -1,0 +1,14 @@
+2026-08-31 01:32:00,955 ERROR scheduler Skipped queueing frappe.integrations.doctype.google_calendar.google_calendar.sync because it was found in queue for apparel-site
+2026-08-31 01:32:00,956 ERROR scheduler Skipped queueing frappe.utils.telemetry.pulse.client.send_queued_events because it was found in queue for apparel-site
+2026-08-31 01:32:00,957 ERROR scheduler Skipped queueing frappe.monitor.flush because it was found in queue for apparel-site
+2026-08-31 01:32:00,960 ERROR scheduler Skipped queueing frappe.email.queue.flush because it was found in queue for apparel-site
+2026-08-31 01:32:00,960 ERROR scheduler Skipped queueing hrms.hr.doctype.interview.interview.send_interview_reminder because it was found in queue for apparel-site
+2026-08-31 01:32:00,961 ERROR scheduler Skipped queueing frappe.email.doctype.email_account.email_account.pull because it was found in queue for apparel-site
+2026-08-31 01:32:00,962 ERROR scheduler Skipped queueing frappe.deferred_insert.save_to_db because it was found in queue for apparel-site
+2026-08-31 01:32:00,964 ERROR scheduler Skipped queueing frappe.search.sqlite_search.index_docs_in_queue because it was found in queue for apparel-site
+2026-08-31 01:32:00,965 ERROR scheduler Skipped queueing frappe.email.queue.retry_sending_emails because it was found in queue for apparel-site
+2026-08-31 01:32:00,966 ERROR scheduler Skipped queueing erpnext.accounts.doctype.gl_entry.gl_entry.rename_gle_sle_docs because it was found in queue for apparel-site
+2026-08-31 01:32:00,967 ERROR scheduler Skipped queueing erpnext.manufacturing.doctype.bom_update_log.bom_update_log.resume_bom_cost_update_jobs because it was found in queue for apparel-site
+2026-08-31 01:32:00,969 ERROR scheduler Skipped queueing erpnext.stock.doctype.repost_item_valuation.repost_item_valuation.run_parallel_reposting because it was found in queue for apparel-site
+2026-08-31 01:32:00,970 ERROR scheduler Skipped queueing frappe.automation.doctype.reminder.reminder.send_reminders because it was found in queue for apparel-site
+2026-08-31 01:32:00,973 ERROR scheduler Skipped queueing payments.payment_gateways.doctype.razorpay_settings.razorpay_settings.capture_payment because it was found in queue for apparel-site
