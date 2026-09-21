@@ -463,3 +463,18 @@
 2026-09-21 20:07:49,068 INFO /home/user/.local/bin/bench --site apparel-site run-tests --module apparel_track.apparel_track.doctype.storage_bin.test_storage_bin
 2026-09-21 20:07:49,904 INFO /home/user/.local/bin/bench --site apparel-site execute apparel_track._verify_tmp.run
 2026-09-21 20:08:10,024 INFO /home/user/.local/bin/bench --site apparel-site run-tests --module apparel_track.apparel_track.doctype.storage_bin.test_storage_bin
+2026-09-21 20:30:54,804 INFO /home/user/.local/bin/bench --site apparel-site execute apparel_track._insp.run
+2026-09-21 20:31:22,901 INFO /home/user/.local/bin/bench --site apparel-site execute apparel_track._insp.run
+2026-09-21 20:32:35,609 INFO /home/user/.local/bin/bench --site apparel-site execute apparel_track._insp.run
+2026-09-21 20:36:34,645 INFO /home/user/.local/bin/bench --site apparel-site run-tests --module apparel_track.tests.test_rules
+2026-09-21 20:36:53,838 INFO /home/user/.local/bin/bench --site apparel-site run-tests --module apparel_track.tests.test_table_10_1
+2026-09-21 20:37:53,219 INFO /home/user/.local/bin/bench --site apparel-site run-tests --module apparel_track.tests.test_table_10_1
+2026-09-21 20:38:28,463 INFO /home/user/.local/bin/bench --site apparel-site execute apparel_track._insp.run
+2026-09-21 20:38:29,376 INFO /home/user/.local/bin/bench --site apparel-site run-tests --module apparel_track.tests.test_table_10_1 --test test_t01_item_template_generates_variant_matrix
+2026-09-21 20:40:31,552 INFO /home/user/.local/bin/bench --site apparel-site execute apparel_track.tests.demo_scenarios.run --kwargs {'color': False}
+2026-09-21 20:41:37,077 INFO /home/user/.local/bin/bench --site apparel-site execute apparel_track._insp.run
+2026-09-21 20:43:41,381 INFO /home/user/.local/bin/bench --site apparel-site execute apparel_track.tests.seed_demo_data.seed
+2026-09-21 20:44:14,103 INFO /home/user/.local/bin/bench --site apparel-site migrate
+2026-09-21 20:44:24,741 INFO /home/user/.local/bin/bench --site apparel-site execute apparel_track._rehearse.run
+2026-09-21 20:44:51,295 INFO /home/user/.local/bin/bench --site apparel-site run-tests --app apparel_track
+2026-09-21 21:02:36,145 INFO /home/user/.local/bin/bench --site apparel-site run-tests --app apparel_track

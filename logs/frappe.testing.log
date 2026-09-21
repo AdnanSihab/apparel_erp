@@ -25,3 +25,28 @@
 2026-09-21 20:08:10,231 INFO frappe.testing started with: site=apparel-site, module=apparel_track.apparel_track.doctype.storage_bin.test_storage_bin, verbose=False, tests=(), force=False, profile=False, failfast=False, skip_before_tests=False, debug=False, selected_categories=[]
 2026-09-21 20:08:10,444 INFO frappe.testing Running "before_tests" hooks for integration tests on app: apparel_track
 2026-09-21 20:08:10,444 INFO frappe.testing Starting tests for app: apparel_track, category: integration
+2026-09-21 20:36:34,886 INFO frappe.testing started with: site=apparel-site, module=apparel_track.tests.test_rules, verbose=False, tests=(), force=False, profile=False, failfast=False, skip_before_tests=False, debug=False, selected_categories=[]
+2026-09-21 20:36:35,109 INFO frappe.testing Starting tests for app: apparel_track, category: unspecified-category
+2026-09-21 20:36:35,109 INFO frappe.testing apparel_track.tests.test_rules.TestReliabilityScore
+2026-09-21 20:36:35,110 INFO frappe.testing apparel_track.tests.test_rules.TestReorderLevelFormula
+2026-09-21 20:36:54,127 INFO frappe.testing started with: site=apparel-site, module=apparel_track.tests.test_table_10_1, verbose=False, tests=(), force=False, profile=False, failfast=False, skip_before_tests=False, debug=False, selected_categories=[]
+2026-09-21 20:36:54,434 INFO frappe.testing Starting tests for app: apparel_track, category: unit
+2026-09-21 20:36:54,434 INFO frappe.testing apparel_track.tests.test_table_10_1.TestTable10_1
+2026-09-21 20:37:53,448 INFO frappe.testing started with: site=apparel-site, module=apparel_track.tests.test_table_10_1, verbose=False, tests=(), force=False, profile=False, failfast=False, skip_before_tests=False, debug=False, selected_categories=[]
+2026-09-21 20:37:53,742 INFO frappe.testing Starting tests for app: apparel_track, category: unit
+2026-09-21 20:37:53,742 INFO frappe.testing apparel_track.tests.test_table_10_1.TestTable10_1
+2026-09-21 20:38:29,672 INFO frappe.testing started with: site=apparel-site, module=apparel_track.tests.test_table_10_1, verbose=False, tests=('test_t01_item_template_generates_variant_matrix',), force=False, profile=False, failfast=False, skip_before_tests=False, debug=False, selected_categories=[]
+2026-09-21 20:38:29,973 INFO frappe.testing Starting tests for app: apparel_track, category: unit
+2026-09-21 20:38:29,974 INFO frappe.testing apparel_track.tests.test_table_10_1.TestTable10_1
+2026-09-21 20:44:51,505 INFO frappe.testing started with: site=apparel-site, app=apparel_track, verbose=False, tests=(), force=False, profile=False, failfast=False, skip_before_tests=False, debug=False, selected_categories=[]
+2026-09-21 20:44:51,752 INFO frappe.testing Starting tests for app: apparel_track, category: unit
+2026-09-21 20:44:51,753 INFO frappe.testing apparel_track.tests.test_table_10_1.TestTable10_1
+2026-09-21 20:44:55,697 INFO frappe.testing Starting tests for app: apparel_track, category: unspecified-category
+2026-09-21 20:44:55,698 INFO frappe.testing apparel_track.tests.test_rules.TestReliabilityScore
+2026-09-21 20:44:55,698 INFO frappe.testing apparel_track.tests.test_rules.TestReorderLevelFormula
+2026-09-21 21:02:36,350 INFO frappe.testing started with: site=apparel-site, app=apparel_track, verbose=False, tests=(), force=False, profile=False, failfast=False, skip_before_tests=False, debug=False, selected_categories=[]
+2026-09-21 21:02:36,600 INFO frappe.testing Starting tests for app: apparel_track, category: unit
+2026-09-21 21:02:36,600 INFO frappe.testing apparel_track.tests.test_table_10_1.TestTable10_1
+2026-09-21 21:02:40,544 INFO frappe.testing Starting tests for app: apparel_track, category: unspecified-category
+2026-09-21 21:02:40,545 INFO frappe.testing apparel_track.tests.test_rules.TestReliabilityScore
+2026-09-21 21:02:40,545 INFO frappe.testing apparel_track.tests.test_rules.TestReorderLevelFormula

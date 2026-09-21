@@ -1517,3 +1517,7 @@ ALTER TABLE `tabSupplier Scorecard` ADD UNIQUE INDEX IF NOT EXISTS supplier (`su
 ALTER TABLE `tabSupplier Scorecard` DROP INDEX `supplier`
 2026-09-21 20:06:55,829 WARNING database DDL Query made to DB:
 ALTER TABLE `tabItem Reorder` MODIFY `custom_dynamic_lead_time_days` decimal(21,9) NOT NULL DEFAULT 0.0
+2026-09-21 20:44:15,260 WARNING database DDL Query made to DB:
+ALTER TABLE `tabSupplier Scorecard` ADD UNIQUE INDEX IF NOT EXISTS supplier (`supplier`)
+2026-09-21 20:44:15,643 WARNING database DDL Query made to DB:
+ALTER TABLE `tabSupplier Scorecard` DROP INDEX `supplier`
