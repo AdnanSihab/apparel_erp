@@ -1,0 +1,116 @@
+diff --git a/frappe/boot.py b/frappe/boot.py
+index abcb252c68..36a22714a4 100644
+--- a/frappe/boot.py
++++ b/frappe/boot.py
+@@ -484,6 +484,10 @@ def get_sidebar_items(allowed_workspaces):
+ 					"report_type": report_type,
+ 					"ref_doctype": ref_doctype,
+ 				}
++			if item.type == "Link" and item.link_type == "Workspace" and item.link_to not in allowed_workspaces:
++				# the desk can only resolve workspaces sent in boot (e.g. "Welcome Workspace" is never sent);
++				# a link to any other workspace breaks sidebar rendering and with it page navigation
++				continue
+ 			if (
+ 				is_my_workspaces
+ 				or item.type == "Section Break"
+diff --git a/frappe/desk/form/save.py b/frappe/desk/form/save.py
+index 2557e7b844..90cbfb24ee 100644
+--- a/frappe/desk/form/save.py
++++ b/frappe/desk/form/save.py
+@@ -17,7 +17,7 @@ def savedocs(doc: str, action: str):
+ 	"""save / submit / update doclist"""
+ 	doc = frappe.get_doc(json.loads(doc))
+ 	capture_doc(doc, action)
+-	if doc.get("__islocal") and doc.name.startswith("new-" + doc.doctype.lower().replace(" ", "-")):
++	if doc.get("__islocal") and doc.name and doc.name.startswith("new-" + doc.doctype.lower().replace(" ", "-")):
+ 		# required to relink missing attachments if they exist.
+ 		doc.__temporary_name = doc.name
+ 
+diff --git a/frappe/model/meta.py b/frappe/model/meta.py
+index 27fffba5a5..05d59811b0 100644
+--- a/frappe/model/meta.py
++++ b/frappe/model/meta.py
+@@ -312,6 +312,10 @@ class Meta(Document):
+ 
+ 		return "No Label"
+ 
++	def get_translated_label(self, fieldname):
++		"""Return the translated label of the given fieldname."""
++		return _(self.get_label(fieldname), context=self.name)
++
+ 	def get_options(self, fieldname):
+ 		return self.get_field(fieldname).options
+ 
+diff --git a/frappe/query_builder/builder.py b/frappe/query_builder/builder.py
+index 9cef2743de..3be4868e8d 100644
+--- a/frappe/query_builder/builder.py
++++ b/frappe/query_builder/builder.py
+@@ -71,14 +71,41 @@ class Base:
+ 			throw(_("Invalid DocType: {0}").format(doctype))
+ 
+ 
++class RecursiveCTEMixin:
++	"""Add optional WITH RECURSIVE support to PyPika query builders."""
++
++	def __init__(self, *args, recursive: bool = False, **kwargs):
++		super().__init__(*args, **kwargs)
++		self._recursive_cte = recursive
++
++	def _with_sql(self, **kwargs) -> str:
++		keyword = "WITH RECURSIVE " if getattr(self, "_recursive_cte", False) else "WITH "
++		return keyword + ",".join(
++			clause.name + " AS (" + clause.get_sql(subquery=False, with_alias=False, **kwargs) + ") "
++			for clause in self._with
++		)
++
++
++class RecursiveMySQLQueryBuilder(RecursiveCTEMixin, MySQLQueryBuilder):
++		pass
++
++
++class RecursivePostgreSQLQueryBuilder(RecursiveCTEMixin, PostgreSQLQueryBuilder):
++		pass
++
++
++class RecursiveSQLLiteQueryBuilder(RecursiveCTEMixin, SQLLiteQueryBuilder):
++		pass
++
++
+ class MariaDB(Base, MySQLQuery):
+ 	Field = terms.Field
+ 
+-	_BuilderClasss = MySQLQueryBuilder
++	_BuilderClasss = RecursiveMySQLQueryBuilder
+ 
+ 	@classmethod
+-	def _builder(cls, *args, **kwargs) -> "MySQLQueryBuilder":
+-		return super()._builder(*args, wrapper_cls=ParameterizedValueWrapper, **kwargs)
++	def _builder(cls, *args, **kwargs) -> "RecursiveMySQLQueryBuilder":
++		return RecursiveMySQLQueryBuilder(*args, wrapper_cls=ParameterizedValueWrapper, **kwargs)
+ 
+ 	@classmethod
+ 	def from_(cls, table, *args, **kwargs):
+@@ -99,11 +126,11 @@ class Postgres(Base, PostgreSQLQuery):
+ 	# they are two different objects. The quick fix used here is to replace the
+ 	# Field names in the "Field" function.
+ 
+-	_BuilderClasss = PostgreSQLQueryBuilder
++	_BuilderClasss = RecursivePostgreSQLQueryBuilder
+ 
+ 	@classmethod
+-	def _builder(cls, *args, **kwargs) -> "PostgreSQLQueryBuilder":
+-		return super()._builder(*args, wrapper_cls=ParameterizedValueWrapper, **kwargs)
++	def _builder(cls, *args, **kwargs) -> "RecursivePostgreSQLQueryBuilder":
++		return RecursivePostgreSQLQueryBuilder(*args, wrapper_cls=ParameterizedValueWrapper, **kwargs)
+ 
+ 	@classmethod
+ 	def Field(cls, field_name, *args, **kwargs):
+@@ -127,7 +154,7 @@ class Postgres(Base, PostgreSQLQuery):
+ class SQLite(Base, SQLLiteQuery):
+ 	Field = terms.Field
+ 
+-	_BuilderClasss = SQLLiteQueryBuilder
++	_BuilderClasss = RecursiveSQLLiteQueryBuilder
+ 
+ 	@classmethod
+ 	def _builder(cls, *args, **kwargs) -> "SQLLiteQueryBuilder":

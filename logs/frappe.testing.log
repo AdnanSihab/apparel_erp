@@ -16,3 +16,12 @@
 2026-09-07 02:13:44,430 INFO frappe.testing started with: site=apparel-site, module=apparel_track.apparel_track.doctype.storage_bin.test_storage_bin, verbose=False, tests=(), force=False, profile=False, failfast=False, skip_before_tests=False, debug=False, selected_categories=[]
 2026-09-07 02:13:44,713 INFO frappe.testing Running "before_tests" hooks for integration tests on app: apparel_track
 2026-09-07 02:13:44,714 INFO frappe.testing Starting tests for app: apparel_track, category: integration
+2026-09-21 20:07:48,541 INFO frappe.testing started with: site=apparel-site, module=apparel_track.apparel_track.doctype.supplier_scorecard.test_supplier_scorecard, verbose=False, tests=(), force=False, profile=False, failfast=False, skip_before_tests=False, debug=False, selected_categories=[]
+2026-09-21 20:07:48,769 INFO frappe.testing Starting tests for app: apparel_track, category: unit
+2026-09-21 20:07:48,769 INFO frappe.testing apparel_track.apparel_track.doctype.supplier_scorecard.test_supplier_scorecard.UnitTestSupplierScorecard
+2026-09-21 20:07:49,280 INFO frappe.testing started with: site=apparel-site, module=apparel_track.apparel_track.doctype.storage_bin.test_storage_bin, verbose=False, tests=(), force=False, profile=False, failfast=False, skip_before_tests=False, debug=False, selected_categories=[]
+2026-09-21 20:07:49,538 INFO frappe.testing Running "before_tests" hooks for integration tests on app: apparel_track
+2026-09-21 20:07:49,538 INFO frappe.testing Starting tests for app: apparel_track, category: integration
+2026-09-21 20:08:10,231 INFO frappe.testing started with: site=apparel-site, module=apparel_track.apparel_track.doctype.storage_bin.test_storage_bin, verbose=False, tests=(), force=False, profile=False, failfast=False, skip_before_tests=False, debug=False, selected_categories=[]
+2026-09-21 20:08:10,444 INFO frappe.testing Running "before_tests" hooks for integration tests on app: apparel_track
+2026-09-21 20:08:10,444 INFO frappe.testing Starting tests for app: apparel_track, category: integration

@@ -1501,3 +1501,19 @@ ALTER TABLE `tabSupplier Scorecard` DROP INDEX `supplier`
 ALTER TABLE `tabSupplier Scorecard` ADD UNIQUE INDEX IF NOT EXISTS supplier (`supplier`)
 2026-09-07 02:51:09,413 WARNING database DDL Query made to DB:
 ALTER TABLE `tabSupplier Scorecard` DROP INDEX `supplier`
+2026-09-21 20:06:35,255 WARNING database DDL Query made to DB:
+ALTER TABLE `tabSupplier Scorecard` ADD UNIQUE INDEX IF NOT EXISTS supplier (`supplier`)
+2026-09-21 20:06:35,651 WARNING database DDL Query made to DB:
+ALTER TABLE `tabStorage Bin` ADD UNIQUE INDEX IF NOT EXISTS bin_id (`bin_id`), ADD UNIQUE INDEX IF NOT EXISTS barcode_qr_code (`barcode_qr_code`)
+2026-09-21 20:06:35,709 WARNING database DDL Query made to DB:
+ALTER TABLE `tabSeason` ADD COLUMN `season_name` varchar(140) UNIQUE
+2026-09-21 20:06:35,710 WARNING database DDL Query made to DB:
+ALTER TABLE `tabSeason` ADD UNIQUE INDEX IF NOT EXISTS season_name (`season_name`)
+2026-09-21 20:06:35,760 WARNING database DDL Query made to DB:
+ALTER TABLE `tabSupplier Scorecard` DROP INDEX `supplier`
+2026-09-21 20:06:55,339 WARNING database DDL Query made to DB:
+ALTER TABLE `tabSupplier Scorecard` ADD UNIQUE INDEX IF NOT EXISTS supplier (`supplier`)
+2026-09-21 20:06:55,713 WARNING database DDL Query made to DB:
+ALTER TABLE `tabSupplier Scorecard` DROP INDEX `supplier`
+2026-09-21 20:06:55,829 WARNING database DDL Query made to DB:
+ALTER TABLE `tabItem Reorder` MODIFY `custom_dynamic_lead_time_days` decimal(21,9) NOT NULL DEFAULT 0.0

@@ -1,0 +1,742 @@
+diff --git a/erpnext/buying/doctype/supplier_scorecard/supplier_scorecard.py b/erpnext/buying/doctype/supplier_scorecard/supplier_scorecard.py
+index 1b99160a3c..a57e8ec7e9 100644
+--- a/erpnext/buying/doctype/supplier_scorecard/supplier_scorecard.py
++++ b/erpnext/buying/doctype/supplier_scorecard/supplier_scorecard.py
+@@ -55,6 +55,8 @@ class SupplierScorecard(Document):
+ 		self.update_standing()
+ 
+ 	def on_update(self):
++		if not getattr(self, "criteria", None):
++			return
+ 		# Guard against recursion: the save() below re-enters on_update().
+ 		if self.flags.in_rescore:
+ 			return
+@@ -188,6 +190,8 @@ def refresh_scorecards():
+ @frappe.whitelist(methods=["POST"])
+ def make_all_scorecards(docname: str):
+ 	sc = frappe.get_doc("Supplier Scorecard", docname)
++	if not getattr(sc, "criteria", None):
++		return 0
+ 	supplier = frappe.get_doc("Supplier", sc.supplier)
+ 	supplier.check_permission("write")
+ 
+@@ -199,7 +203,9 @@ def make_all_scorecards(docname: str):
+ 	first_start_date = todays
+ 	last_end_date = todays
+ 
+-	while (start_date < todays) and (end_date <= todays):
++	# Create the current period as well as completed periods so a new scorecard
++	# has an active period immediately after it is saved.
++	while start_date <= todays:
+ 		# check to make sure there is no scorecard period already created
+ 		# (inclusive bounds: a single-day period — supplier created on a month's
+ 		# last day — must match its own window, else it is re-created every run)
+diff --git a/erpnext/buying/workspace/buying/buying.json b/erpnext/buying/workspace/buying/buying.json
+index 3e62aaf912..bdb9193f2d 100644
+--- a/erpnext/buying/workspace/buying/buying.json
++++ b/erpnext/buying/workspace/buying/buying.json
+@@ -18,10 +18,9 @@
+  "is_hidden": 0,
+  "label": "Buying",
+  "links": [],
+- "modified": "2026-08-26 18:34:03.000000",
++ "modified": "2026-09-07 02:49:17.073408",
+  "modified_by": "Administrator",
+  "module": "Buying",
+- "module_onboarding": "Buying Onboarding",
+  "name": "Buying",
+  "number_cards": [
+   {
+@@ -44,520 +43,15 @@
+  "restrict_to_domain": "",
+  "roles": [],
+  "sequence_id": 5.0,
+- "shortcuts": [],
+- "sidebar_items": [
++ "shortcuts": [
+   {
+-   "child": 0,
+-   "collapsible": 1,
+-   "icon": "house",
+-   "indent": 0,
+-   "keep_closed": 0,
+-   "label": "Home",
+-   "link_to": "Buying",
+-   "link_type": "Workspace",
+-   "open_in_new_tab": 0,
+-   "show_arrow": 0,
+-   "type": "Link"
+-  },
+-  {
+-   "child": 0,
+-   "collapsible": 1,
+-   "icon": "chart-column",
+-   "indent": 0,
+-   "keep_closed": 0,
+-   "label": "Dashboard",
+-   "link_to": "Buying",
+-   "link_type": "Dashboard",
+-   "open_in_new_tab": 0,
+-   "show_arrow": 0,
+-   "type": "Link"
+-  },
+-  {
+-   "child": 0,
+-   "collapsible": 1,
+-   "icon": "notepad-text",
+-   "indent": 0,
+-   "keep_closed": 0,
+-   "label": "Material Request",
+-   "link_to": "Material Request",
+-   "link_type": "DocType",
+-   "open_in_new_tab": 0,
+-   "show_arrow": 0,
+-   "type": "Link"
+-  },
+-  {
+-   "child": 0,
+-   "collapsible": 1,
+-   "icon": "git-pull-request-arrow",
+-   "indent": 0,
+-   "keep_closed": 0,
+-   "label": "Request for Quotation",
+-   "link_to": "Request for Quotation",
+-   "link_type": "DocType",
+-   "open_in_new_tab": 0,
+-   "show_arrow": 0,
+-   "type": "Link"
+-  },
+-  {
+-   "child": 0,
+-   "collapsible": 1,
+-   "icon": "book-open-text",
+-   "indent": 0,
+-   "keep_closed": 0,
+-   "label": "Supplier Quotation",
+-   "link_to": "Supplier Quotation",
+-   "link_type": "DocType",
+-   "open_in_new_tab": 0,
+-   "show_arrow": 0,
+-   "type": "Link"
+-  },
+-  {
+-   "child": 0,
+-   "collapsible": 1,
+-   "icon": "receipt-text",
+-   "indent": 0,
+-   "keep_closed": 0,
+-   "label": "Purchase Order",
+-   "link_to": "Purchase Order",
+-   "link_type": "DocType",
+-   "open_in_new_tab": 0,
+-   "show_arrow": 0,
+-   "type": "Link"
+-  },
+-  {
+-   "child": 0,
+-   "collapsible": 1,
+-   "icon": "scale",
+-   "indent": 0,
+-   "keep_closed": 0,
+-   "label": "Purchase Invoice",
+-   "link_to": "Purchase Invoice",
+-   "link_type": "DocType",
+-   "open_in_new_tab": 0,
+-   "show_arrow": 0,
+-   "type": "Link"
+-  },
+-  {
+-   "child": 0,
+-   "collapsible": 1,
+-   "icon": "database",
+-   "indent": 1,
+-   "keep_closed": 1,
+-   "label": "Setup",
+-   "link_type": "DocType",
+-   "open_in_new_tab": 0,
+-   "show_arrow": 0,
+-   "type": "Section Break"
+-  },
+-  {
+-   "child": 1,
+-   "collapsible": 1,
+-   "icon": "",
+-   "indent": 0,
+-   "keep_closed": 0,
+-   "label": "Supplier",
+-   "link_to": "Supplier",
+-   "link_type": "DocType",
+-   "open_in_new_tab": 0,
+-   "show_arrow": 0,
+-   "type": "Link"
+-  },
+-  {
+-   "child": 1,
+-   "collapsible": 1,
+-   "indent": 0,
+-   "keep_closed": 0,
+-   "label": "Supplier Group",
+-   "link_to": "Supplier Group",
+-   "link_type": "DocType",
+-   "open_in_new_tab": 0,
+-   "show_arrow": 0,
+-   "type": "Link"
+-  },
+-  {
+-   "child": 1,
+-   "collapsible": 1,
+-   "icon": "",
+-   "indent": 0,
+-   "keep_closed": 0,
+-   "label": "Item",
+-   "link_to": "Item",
+-   "link_type": "DocType",
+-   "open_in_new_tab": 0,
+-   "show_arrow": 0,
+-   "type": "Link"
+-  },
+-  {
+-   "child": 1,
+-   "collapsible": 1,
+-   "indent": 0,
+-   "keep_closed": 0,
+-   "label": "Price List",
+-   "link_to": "Price List",
+-   "link_type": "DocType",
+-   "open_in_new_tab": 0,
+-   "show_arrow": 0,
+-   "type": "Link"
+-  },
+-  {
+-   "child": 1,
+-   "collapsible": 1,
+-   "indent": 0,
+-   "keep_closed": 0,
+-   "label": "Address",
+-   "link_to": "Address",
+-   "link_type": "DocType",
+-   "open_in_new_tab": 0,
+-   "show_arrow": 0,
+-   "type": "Link"
+-  },
+-  {
+-   "child": 1,
+-   "collapsible": 1,
+-   "indent": 0,
+-   "keep_closed": 0,
+-   "label": "Contacts",
+-   "link_to": "Contact",
+-   "link_type": "DocType",
+-   "open_in_new_tab": 0,
+-   "show_arrow": 0,
+-   "type": "Link"
+-  },
+-  {
+-   "child": 1,
+-   "collapsible": 1,
+-   "indent": 0,
+-   "keep_closed": 0,
+-   "label": "Supplier Scorecard",
+-   "link_to": "Supplier Scorecard",
+-   "link_type": "DocType",
+-   "open_in_new_tab": 0,
+-   "show_arrow": 0,
+-   "type": "Link"
+-  },
+-  {
+-   "child": 1,
+-   "collapsible": 1,
+-   "indent": 0,
+-   "keep_closed": 0,
+-   "label": "Supplier Scorecard Criteria",
+-   "link_to": "Supplier Scorecard Criteria",
+-   "link_type": "DocType",
+-   "open_in_new_tab": 0,
+-   "show_arrow": 0,
+-   "type": "Link"
+-  },
+-  {
+-   "child": 1,
+-   "collapsible": 1,
+-   "indent": 0,
+-   "keep_closed": 0,
+-   "label": "Supplier Scorecard Variable",
+-   "link_to": "Supplier Scorecard Variable",
+-   "link_type": "DocType",
+-   "open_in_new_tab": 0,
+-   "show_arrow": 0,
+-   "type": "Link"
+-  },
+-  {
+-   "child": 1,
+-   "collapsible": 1,
+-   "indent": 0,
+-   "keep_closed": 0,
+-   "label": "Supplier Scorecard Standing",
+-   "link_to": "Supplier Scorecard Standing",
+-   "link_type": "DocType",
+-   "open_in_new_tab": 0,
+-   "show_arrow": 0,
+-   "type": "Link"
+-  },
+-  {
+-   "child": 0,
+-   "collapsible": 1,
+-   "icon": "rocket",
+-   "indent": 1,
+-   "keep_closed": 1,
+-   "label": "Subcontracting",
+-   "link_type": "DocType",
+-   "open_in_new_tab": 0,
+-   "show_arrow": 0,
+-   "type": "Section Break"
+-  },
+-  {
+-   "child": 1,
+-   "collapsible": 1,
+-   "icon": "folder-tree",
+-   "indent": 0,
+-   "keep_closed": 0,
+-   "label": "Subcontracting BOM",
+-   "link_to": "Subcontracting BOM",
+-   "link_type": "DocType",
+-   "open_in_new_tab": 0,
+-   "show_arrow": 0,
+-   "type": "Link"
+-  },
+-  {
+-   "child": 1,
+-   "collapsible": 1,
+-   "icon": "",
+-   "indent": 0,
+-   "keep_closed": 0,
+-   "label": "Subcontracting Inward Order",
+-   "link_to": "Subcontracting Inward Order",
+-   "link_type": "DocType",
+-   "open_in_new_tab": 0,
+-   "show_arrow": 0,
+-   "type": "Link"
+-  },
+-  {
+-   "child": 1,
+-   "collapsible": 1,
+-   "icon": "",
+-   "indent": 0,
+-   "keep_closed": 0,
+-   "label": "Subcontracting Delivery",
+-   "link_to": "Stock Entry",
+-   "link_type": "DocType",
+-   "open_in_new_tab": 0,
+-   "show_arrow": 0,
+-   "type": "Link"
+-  },
+-  {
+-   "child": 1,
+-   "collapsible": 1,
+-   "icon": "",
+-   "indent": 0,
+-   "keep_closed": 0,
+-   "label": "Subcontracting Order",
+-   "link_to": "Subcontracting Order",
+-   "link_type": "DocType",
+-   "open_in_new_tab": 0,
+-   "show_arrow": 0,
+-   "type": "Link"
+-  },
+-  {
+-   "child": 1,
+-   "collapsible": 1,
+-   "icon": "",
+-   "indent": 0,
+-   "keep_closed": 0,
+-   "label": "Subcontracting Receipt",
+-   "link_to": "Subcontracting Receipt",
+-   "link_type": "DocType",
+-   "open_in_new_tab": 0,
+-   "show_arrow": 0,
+-   "type": "Link"
+-  },
+-  {
+-   "child": 0,
+-   "collapsible": 1,
+-   "icon": "sheet",
+-   "indent": 1,
+-   "keep_closed": 1,
+-   "label": "Reports",
+-   "link_type": "DocType",
+-   "open_in_new_tab": 0,
+-   "show_arrow": 0,
+-   "type": "Section Break"
+-  },
+-  {
+-   "child": 1,
+-   "collapsible": 1,
+-   "indent": 0,
+-   "keep_closed": 0,
+-   "label": "Purchase Analytics",
+-   "link_to": "Purchase Analytics",
+-   "link_type": "Report",
+-   "open_in_new_tab": 0,
+-   "show_arrow": 0,
+-   "type": "Link"
+-  },
+-  {
+-   "child": 1,
+-   "collapsible": 1,
+-   "indent": 0,
+-   "keep_closed": 0,
+-   "label": "Purchase Order Analysis",
+-   "link_to": "Purchase Order Analysis",
+-   "link_type": "Report",
+-   "open_in_new_tab": 0,
+-   "show_arrow": 0,
+-   "type": "Link"
+-  },
+-  {
+-   "child": 1,
+-   "collapsible": 1,
+-   "indent": 0,
+-   "keep_closed": 0,
+-   "label": "Requested Items to Order and Receive",
+-   "link_to": "Requested Items to Order and Receive",
+-   "link_type": "Report",
+-   "open_in_new_tab": 0,
+-   "show_arrow": 0,
+-   "type": "Link"
+-  },
+-  {
+-   "child": 1,
+-   "collapsible": 1,
+-   "indent": 0,
+-   "keep_closed": 0,
+-   "label": "Items To Be Requested",
+-   "link_to": "Items To Be Requested",
+-   "link_type": "Report",
+-   "open_in_new_tab": 0,
+-   "show_arrow": 0,
+-   "type": "Link"
+-  },
+-  {
+-   "child": 1,
+-   "collapsible": 1,
+-   "indent": 0,
+-   "keep_closed": 0,
+-   "label": "Item-wise Purchase History",
+-   "link_to": "Item-wise Purchase History",
+-   "link_type": "Report",
+-   "open_in_new_tab": 0,
+-   "show_arrow": 0,
+-   "type": "Link"
+-  },
+-  {
+-   "child": 1,
+-   "collapsible": 1,
+-   "indent": 0,
+-   "keep_closed": 0,
+-   "label": "Purchase Receipt Trends ",
+-   "link_to": "Purchase Receipt Trends",
+-   "link_type": "Report",
+-   "open_in_new_tab": 0,
+-   "show_arrow": 0,
+-   "type": "Link"
+-  },
+-  {
+-   "child": 1,
+-   "collapsible": 1,
+-   "indent": 0,
+-   "keep_closed": 0,
+-   "label": "Purchase Invoice Trends",
+-   "link_to": "Purchase Invoice Trends",
+-   "link_type": "Report",
+-   "open_in_new_tab": 0,
+-   "show_arrow": 0,
+-   "type": "Link"
+-  },
+-  {
+-   "child": 1,
+-   "collapsible": 1,
+-   "indent": 0,
+-   "keep_closed": 0,
+-   "label": "Purchase Order Trends",
+-   "link_to": "Purchase Order Trends",
+-   "link_type": "Report",
+-   "open_in_new_tab": 0,
+-   "show_arrow": 0,
+-   "type": "Link"
+-  },
+-  {
+-   "child": 1,
+-   "collapsible": 1,
+-   "indent": 0,
+-   "keep_closed": 0,
+-   "label": "Procurement Tracker",
+-   "link_to": "Procurement Tracker",
+-   "link_type": "Report",
+-   "open_in_new_tab": 0,
+-   "show_arrow": 0,
+-   "type": "Link"
+-  },
+-  {
+-   "child": 1,
+-   "collapsible": 1,
+-   "indent": 0,
+-   "keep_closed": 0,
+-   "label": "Item Wise Consumption",
+-   "link_to": "Item Wise Consumption",
+-   "link_type": "Report",
+-   "open_in_new_tab": 0,
+-   "show_arrow": 0,
+-   "type": "Link"
+-  },
+-  {
+-   "child": 1,
+-   "collapsible": 1,
+-   "indent": 0,
+-   "keep_closed": 0,
+-   "label": "Supplier Quotation Comparison",
+-   "link_to": "Supplier Quotation Comparison",
+-   "link_type": "Report",
+-   "open_in_new_tab": 0,
+-   "show_arrow": 0,
+-   "type": "Link"
+-  },
+-  {
+-   "child": 1,
+-   "collapsible": 1,
+-   "indent": 0,
+-   "keep_closed": 0,
+-   "label": "Supplier Addresses And Contacts",
+-   "link_to": "Address And Contacts",
+-   "link_type": "Report",
+-   "open_in_new_tab": 0,
+-   "show_arrow": 0,
+-   "type": "Link"
+-  },
+-  {
+-   "child": 1,
+-   "collapsible": 1,
+-   "icon": "",
+-   "indent": 0,
+-   "keep_closed": 0,
+-   "label": "Subcontract Order Summary",
+-   "link_to": "Subcontract Order Summary",
+-   "link_type": "Report",
+-   "open_in_new_tab": 0,
+-   "show_arrow": 0,
+-   "type": "Link"
+-  },
+-  {
+-   "child": 1,
+-   "collapsible": 1,
+-   "icon": "",
+-   "indent": 0,
+-   "keep_closed": 0,
+-   "label": "Materials To Be Transferred",
+-   "link_to": "Subcontracted Raw Materials To Be Transferred",
+-   "link_type": "Report",
+-   "open_in_new_tab": 0,
+-   "show_arrow": 0,
+-   "type": "Link"
+-  },
+-  {
+-   "child": 1,
+-   "collapsible": 1,
+-   "icon": "",
+-   "indent": 0,
+-   "keep_closed": 0,
+-   "label": "Items To Be Received",
+-   "link_to": "Subcontracted Item To Be Received",
+-   "link_type": "Report",
+-   "open_in_new_tab": 0,
+-   "show_arrow": 0,
+-   "type": "Link"
+-  },
+-  {
+-   "child": 0,
+-   "collapsible": 1,
+-   "icon": "settings",
+-   "indent": 0,
+-   "keep_closed": 0,
+-   "label": "Settings",
+-   "link_to": "Buying Settings",
+-   "link_type": "DocType",
+-   "open_in_new_tab": 0,
+-   "show_arrow": 0,
+-   "type": "Link"
++   "doc_view": "",
++   "icon": "chart-line",
++   "label": "Supplier Performance",
++    "type": "URL",
++    "url": "/app/dashboard-view/Supplier%20Performance"
+   }
+  ],
+- "standard": 1,
+  "title": "Buying",
+  "type": "Workspace"
+ }
+diff --git a/erpnext/public/js/controllers/buying.js b/erpnext/public/js/controllers/buying.js
+index e89ee39ac4..8ae926ac60 100644
+--- a/erpnext/public/js/controllers/buying.js
++++ b/erpnext/public/js/controllers/buying.js
+@@ -263,7 +263,7 @@ erpnext.buying = {
+ 						frappe.msgprint(
+ 							__("Row #{0}: {1} can not be negative for item {2}", [
+ 								item.idx,
+-								frappe.meta.get_translated_label(cdt, fieldnames[i], cdn),
++																frappe.meta.get_label(cdt, fieldnames[i], cdn),
+ 								item.item_code,
+ 							])
+ 						);
+diff --git a/erpnext/public/js/controllers/taxes_and_totals.js b/erpnext/public/js/controllers/taxes_and_totals.js
+index eabfdc47b9..30dcfb0e83 100644
+--- a/erpnext/public/js/controllers/taxes_and_totals.js
++++ b/erpnext/public/js/controllers/taxes_and_totals.js
+@@ -122,7 +122,7 @@ erpnext.taxes_and_totals = class TaxesAndTotals extends erpnext.payments {
+ 			this.frm.doc.conversion_rate,
+ 			cur_frm ? precision("conversion_rate") : 9
+ 		);
+-		var conversion_rate_label = frappe.meta.get_translated_label(
++		var conversion_rate_label = frappe.meta.get_label(
+ 			this.frm.doc.doctype,
+ 			"conversion_rate",
+ 			this.frm.doc.name
+diff --git a/erpnext/public/js/controllers/transaction.js b/erpnext/public/js/controllers/transaction.js
+index b7a5fd9b2b..ca75a97ce7 100644
+--- a/erpnext/public/js/controllers/transaction.js
++++ b/erpnext/public/js/controllers/transaction.js
+@@ -1438,17 +1438,17 @@ erpnext.TransactionController = class TransactionController extends erpnext.taxe
+ 		) {
+ 			const to_clear = [];
+ 			if (doc.payment_terms_template) {
+-				to_clear.push(frappe.meta.get_translated_label(cdt, "payment_terms_template"));
++								to_clear.push(frappe.meta.get_label(cdt, "payment_terms_template"));
+ 			}
+ 
+ 			if (doc.payment_schedule?.length) {
+-				to_clear.push(frappe.meta.get_translated_label(cdt, "payment_schedule"));
++								to_clear.push(frappe.meta.get_label(cdt, "payment_schedule"));
+ 			}
+ 
+ 			frappe.confirm(
+ 				__(
+ 					"For the new {0} to take effect, would you like to clear the current {1}?",
+-					[frappe.meta.get_translated_label(cdt, "due_date"), frappe.utils.comma_and(to_clear)],
++										[frappe.meta.get_label(cdt, "due_date"), frappe.utils.comma_and(to_clear)],
+ 					"Clear payment terms template and/or payment schedule when due date is changed"
+ 				),
+ 				() => {
+@@ -2646,7 +2646,7 @@ erpnext.TransactionController = class TransactionController extends erpnext.taxe
+ 				if (!me.frm.doc[fieldname]) {
+ 					frappe.msgprint(
+ 						__("Please specify {0}. It is needed to fetch Item Details.", [
+-							frappe.meta.get_translated_label(me.frm.doc.doctype, fieldname, me.frm.doc.name),
++														frappe.meta.get_label(me.frm.doc.doctype, fieldname, me.frm.doc.name),
+ 						])
+ 					);
+ 					valid = false;
+diff --git a/erpnext/public/js/queries.js b/erpnext/public/js/queries.js
+index eba0bdabfb..07a616997a 100644
+--- a/erpnext/public/js/queries.js
++++ b/erpnext/public/js/queries.js
+@@ -46,7 +46,7 @@ $.extend(erpnext.queries, {
+ 			cur_frm.scroll_to_field("customer");
+ 			frappe.show_alert({
+ 				message: __("Please set {0} first.", [
+-					frappe.meta.get_translated_label(doc.doctype, "customer", doc.name),
++										frappe.meta.get_label(doc.doctype, "customer", doc.name),
+ 				]),
+ 				indicator: "orange",
+ 			});
+@@ -61,7 +61,7 @@ $.extend(erpnext.queries, {
+ 				cur_frm.scroll_to_field(frappe.dynamic_link.fieldname);
+ 				frappe.show_alert({
+ 					message: __("Please set {0} first.", [
+-						frappe.meta.get_translated_label(
++												frappe.meta.get_label(
+ 							doc.doctype,
+ 							frappe.dynamic_link.fieldname,
+ 							doc.name
+@@ -84,7 +84,7 @@ $.extend(erpnext.queries, {
+ 	company_contact_query: function (doc) {
+ 		if (!doc.company) {
+ 			frappe.throw(
+-				__("Please set {0}", [frappe.meta.get_translated_label(doc.doctype, "company", doc.name)])
++						  __("Please set {0}", [frappe.meta.get_label(doc.doctype, "company", doc.name)])
+ 			);
+ 		}
+ 
+@@ -100,7 +100,7 @@ $.extend(erpnext.queries, {
+ 				cur_frm.scroll_to_field(frappe.dynamic_link.fieldname);
+ 				frappe.show_alert({
+ 					message: __("Please set {0} first.", [
+-						frappe.meta.get_translated_label(
++								 frappe.meta.get_label(
+ 							doc.doctype,
+ 							frappe.dynamic_link.fieldname,
+ 							doc.name
+@@ -125,7 +125,7 @@ $.extend(erpnext.queries, {
+ 			cur_frm.scroll_to_field("company");
+ 			frappe.show_alert({
+ 				message: __("Please set {0} first.", [
+-					frappe.meta.get_translated_label(doc.doctype, "company", doc.name),
++								 frappe.meta.get_label(doc.doctype, "company", doc.name),
+ 				]),
+ 				indicator: "orange",
+ 			});
+@@ -156,7 +156,7 @@ $.extend(erpnext.queries, {
+ 			cur_frm.scroll_to_field("supplier");
+ 			frappe.show_alert({
+ 				message: __("Please set {0} first.", [
+-					frappe.meta.get_translated_label(doc.doctype, "supplier", doc.name),
++						  frappe.meta.get_label(doc.doctype, "supplier", doc.name),
+ 				]),
+ 				indicator: "orange",
+ 			});
+@@ -170,7 +170,7 @@ $.extend(erpnext.queries, {
+ 			cur_frm.scroll_to_field("lead");
+ 			frappe.show_alert({
+ 				message: __("Please specify a {0} first.", [
+-					frappe.meta.get_translated_label(doc.doctype, "lead", doc.name),
++								 frappe.meta.get_label(doc.doctype, "lead", doc.name),
+ 				]),
+ 				indicator: "orange",
+ 			});
+diff --git a/erpnext/public/js/utils/sales_common.js b/erpnext/public/js/utils/sales_common.js
+index 9e9750174b..316e1c8e65 100644
+--- a/erpnext/public/js/utils/sales_common.js
++++ b/erpnext/public/js/utils/sales_common.js
+@@ -353,7 +353,7 @@ erpnext.sales_common = {
+ 					this.frm.set_value("commission_rate", 100);
+ 					frappe.throw(
+ 						__("{0} cannot be greater than 100", [
+-							frappe.meta.get_translated_label(
++							  frappe.meta.get_label(
+ 								this.frm.doc.doctype,
+ 								"commission_rate",
+ 								this.frm.doc.name
+diff --git a/erpnext/setup/install.py b/erpnext/setup/install.py
+index 1a1608b775..a268f3b156 100644
+--- a/erpnext/setup/install.py
++++ b/erpnext/setup/install.py
+@@ -5,7 +5,7 @@
+ import os
+ 
+ import frappe
+-from frappe import N_ as _
++from frappe import _
+ from frappe.custom.doctype.custom_field.custom_field import create_custom_fields
+ from frappe.desk.page.setup_wizard.setup_wizard import add_all_roles_to
+ 
+diff --git a/erpnext/setup/setup_wizard/operations/install_fixtures.py b/erpnext/setup/setup_wizard/operations/install_fixtures.py
+index c3beba293b..e7aa0ba619 100644
+--- a/erpnext/setup/setup_wizard/operations/install_fixtures.py
++++ b/erpnext/setup/setup_wizard/operations/install_fixtures.py
+@@ -7,7 +7,7 @@ import os
+ from pathlib import Path
+ 
+ import frappe
+-from frappe import N_ as _
++from frappe import _
+ from frappe.desk.doctype.global_search_settings.global_search_settings import (
+ 	update_global_search_doctypes,
+ )
