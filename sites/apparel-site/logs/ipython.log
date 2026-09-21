@@ -116,3 +116,486 @@ company_name = company[0].name
 2026-08-30 14:23:56,725 INFO ipython print('columns:', frappe.db.get_table_columns('tabContact')[:20])
 2026-08-30 14:23:56,725 INFO ipython print('has is_billing_contact column?', 'is_billing_contact' in frappe.db.get_table_columns('tabContact'))
 2026-08-30 14:23:56,725 INFO ipython === session end ===
+2026-09-03 01:20:37,688 INFO ipython === bench console session ===
+2026-09-03 01:20:37,688 INFO ipython print('WAREHOUSES', frappe.get_all('Warehouse', filters={'is_group': 0}, fields=['name','company'], limit_page_length=100)); print('STOCK_ITEMS', frappe.get_all('Item', filters={'is_stock_item': 1}, fields=['name','item_name','has_batch_no','barcode'], limit_page_length=30)); print('BATCHES', frappe.get_all('Batch', fields=['name','item','custom_dye_lot_number','custom_roll_length_meters'], limit_page_length=30)); print('STOCK_ENTRIES', frappe.get_all('Stock Entry', filters={'docstatus': 1}, fields=['name','stock_entry_type','posting_date'], order_by='creation desc', limit_page_length=20))
+2026-09-03 01:20:37,688 INFO ipython print('ITEMS', frappe.get_all('Item', filters={'is_stock_item': 1}, fields=['name','item_name','has_batch_no'], limit_page_length=50)); print('BATCHES', frappe.get_all('Batch', fields=['name','item','custom_dye_lot_number','custom_roll_length_meters'], limit_page_length=50)); print('STOCK_ENTRIES', frappe.get_all('Stock Entry', filters={'docstatus': 1}, fields=['name','stock_entry_type','posting_date'], order_by='creation desc', limit_page_length=30)); print('MATERIAL_REQUESTS', frappe.get_all('Material Request', fields=['name','docstatus','material_request_type','custom_generated_by'], order_by='creation desc', limit_page_length=20))
+2026-09-03 01:20:37,688 INFO ipython === session end ===
+2026-09-05 21:53:34,506 INFO ipython === bench console session ===
+2026-09-05 21:53:34,507 INFO ipython import frappe
+2026-09-05 21:53:34,507 INFO ipython print(frappe.db.get_value('Item', {'item_name': 'Test Item 1'}, ['name', 'item_code', 'has_serial_no', 'serial_no_series'], as_dict=True))
+2026-09-05 21:53:34,507 INFO ipython print(frappe.get_all('Serial No', filters={'item_code': ['like', '%Test Item 1%']}, fields=['name','item_code'], order_by='creation desc', limit=20))
+2026-09-05 21:53:34,507 INFO ipython === session end ===
+2026-09-05 21:53:43,767 INFO ipython === bench console session ===
+2026-09-05 21:53:43,768 INFO ipython import frappe
+2026-09-05 21:53:43,768 INFO ipython print(frappe.get_all('Item', filters={'item_code': ['like', '%Test Item 1%']}, fields=['name','item_code','item_name','has_serial_no','serial_no_series']))
+2026-09-05 21:53:43,768 INFO ipython print(frappe.get_all('Item', filters={'item_name': ['like', '%Test Item 1%']}, fields=['name','item_code','item_name','has_serial_no','serial_no_series']))
+2026-09-05 21:53:43,768 INFO ipython print(frappe.get_all('Serial No', filters={'item_code': 'Test Item 1'}, fields=['name','serial_no','creation'], order_by='creation asc'))
+2026-09-05 21:53:43,768 INFO ipython === session end ===
+2026-09-05 21:53:50,141 INFO ipython === bench console session ===
+2026-09-05 21:53:50,141 INFO ipython import frappe
+2026-09-05 21:53:50,141 INFO ipython from frappe.model.naming import NamingSeries
+2026-09-05 21:53:50,142 INFO ipython print(frappe.db.sql("select name, current from  where name in ('0001', 'TI1-.#####')", as_dict=True))
+2026-09-05 21:53:50,142 INFO ipython print(NamingSeries('0001').get_current_value())
+2026-09-05 21:53:50,142 INFO ipython print(frappe.get_all('Serial No', filters={'item_code': 'Test Item 1'}, fields=['name','serial_no'], order_by='name'))
+2026-09-05 21:53:50,142 INFO ipython === session end ===
+2026-09-05 21:53:57,360 INFO ipython === bench console session ===
+2026-09-05 21:53:57,360 INFO ipython import frappe
+2026-09-05 21:53:57,361 INFO ipython item = frappe.get_doc('Item', 'Test Item 1')
+2026-09-05 21:53:57,361 INFO ipython item.serial_no_series = 'TI1-.#####'
+2026-09-05 21:53:57,361 INFO ipython item.save(ignore_permissions=True)
+2026-09-05 21:53:57,361 INFO ipython frappe.db.commit()
+2026-09-05 21:53:57,361 INFO ipython print(frappe.db.get_value('Item', 'Test Item 1', ['item_code', 'serial_no_series'], as_dict=True))
+2026-09-05 21:53:57,361 INFO ipython === session end ===
+2026-09-05 21:54:05,367 INFO ipython === bench console session ===
+2026-09-05 21:54:05,367 INFO ipython import frappe
+2026-09-05 21:54:05,367 INFO ipython from frappe.model.naming import parse_naming_series
+2026-09-05 21:54:05,367 INFO ipython series = 'TI1-.#####'
+2026-09-05 21:54:05,367 INFO ipython print(parse_naming_series(series, number_generator=lambda partial, digits: f'{1:0{digits}d}'))
+2026-09-05 21:54:05,367 INFO ipython print(frappe.get_all('Serial No', filters={'item_code': 'Test Item 1', 'name': ['like', 'TI1-%']}, fields=['name']))
+2026-09-05 21:54:05,367 INFO ipython print(frappe.db.get_value('Item', 'Test Item 1', 'serial_no_series'))
+2026-09-05 21:54:05,367 INFO ipython === session end ===
+2026-09-05 22:09:26,223 INFO ipython === bench console session ===
+2026-09-05 22:09:26,223 INFO ipython doc = frappe.get_doc('Stock Entry', 'MAT-STE-2026-00005'); doc.submit(); frappe.db.commit(); print(doc.name, doc.docstatus)
+2026-09-05 22:09:26,223 INFO ipython from apparel_track.apparel_track.reorder_engine import process_reorder_engine; process_reorder_engine(); print('reorder engine complete')
+2026-09-05 22:09:26,223 INFO ipython === session end ===
+2026-09-05 22:41:29,670 INFO ipython === bench console session ===
+2026-09-05 22:41:29,670 INFO ipython import frappe
+2026-09-05 22:41:29,670 INFO ipython print(frappe.get_all('Purchase Order', filters={'name': 'PUR-ORD-2026-00001'}, fields=['name','docstatus','supplier','transaction_date']))
+2026-09-05 22:41:29,670 INFO ipython print(frappe.get_all('Purchase Receipt', fields=['name','docstatus','supplier','posting_date'], order_by='modified desc', limit=10))
+2026-09-05 22:41:29,670 INFO ipython === session end ===
+2026-09-05 22:41:37,275 INFO ipython === bench console session ===
+2026-09-05 22:41:37,275 INFO ipython import frappe
+2026-09-05 22:41:37,275 INFO ipython po=frappe.get_doc('Purchase Order','PUR-ORD-2026-00001')
+2026-09-05 22:41:37,275 INFO ipython print(po.as_dict())
+2026-09-05 22:41:37,275 INFO ipython === session end ===
+2026-09-05 22:41:38,574 INFO ipython === bench console session ===
+2026-09-05 22:41:38,574 INFO ipython import frappe
+2026-09-05 22:41:38,574 INFO ipython from erpnext.buying.doctype.purchase_order.purchase_order import make_purchase_receipt
+2026-09-05 22:41:38,574 INFO ipython === session end ===
+2026-09-05 22:42:07,965 INFO ipython === bench console session ===
+2026-09-05 22:42:07,965 INFO ipython import frappe
+2026-09-05 22:42:07,965 INFO ipython from erpnext.buying.doctype.purchase_order.mapper import make_purchase_receipt
+2026-09-05 22:42:07,965 INFO ipython try:
+    doc = make_purchase_receipt('PUR-ORD-2026-00001')
+    print('MAPPED', doc.doctype, doc.supplier, doc.company, len(doc.items))
+    for item in doc.items:
+        print('ITEM', item.item_code, item.qty, item.warehouse, item.purchase_order, item.purchase_order_item)
+    doc.save()
+    print('SAVED', doc.name)
+except Exception:
+    print(frappe.get_traceback())
+exit()
+2026-09-05 22:42:07,965 INFO ipython === session end ===
+2026-09-05 22:42:21,177 INFO ipython === bench console session ===
+2026-09-05 22:42:21,177 INFO ipython import frappe
+2026-09-05 22:42:21,177 INFO ipython pr=frappe.get_doc('Purchase Receipt','MAT-PRE-2026-00001')
+2026-09-05 22:42:21,177 INFO ipython try:
+    pr.validate()
+    print('VALIDATION_OK')
+except Exception:
+    print(frappe.get_traceback())
+frappe.delete_doc('Purchase Receipt','MAT-PRE-2026-00001', ignore_permissions=True, force=True)
+2026-09-05 22:42:21,177 INFO ipython frappe.db.commit()
+2026-09-05 22:42:21,177 INFO ipython print('DELETED_TEST_DRAFT')
+2026-09-05 22:42:21,177 INFO ipython === session end ===
+2026-09-05 22:45:57,331 INFO ipython === bench console session ===
+2026-09-05 22:45:57,331 INFO ipython import frappe
+2026-09-05 22:45:57,331 INFO ipython print(frappe.get_hooks('doctype_js').get('Purchase Order'))
+2026-09-05 22:45:57,331 INFO ipython print('Purchase Receipt create:', frappe.has_permission('Purchase Receipt', ptype='create', user='Administrator'))
+2026-09-05 22:45:57,331 INFO ipython print('PO:', frappe.db.get_value('Purchase Order','PUR-ORD-2026-00001',['docstatus','status','per_received']))
+2026-09-05 22:45:57,331 INFO ipython === session end ===
+2026-09-05 22:52:44,599 INFO ipython === bench console session ===
+2026-09-05 22:52:44,599 INFO ipython import frappe
+2026-09-05 22:52:44,599 INFO ipython try:
+ print(frappe.has_permission('Purchase Receipt', ptype='create', user='Administrator'))
+except Exception:
+ print(frappe.get_traceback())
+exit()
+2026-09-05 22:52:44,599 INFO ipython === session end ===
+2026-09-05 22:56:16,946 INFO ipython === bench console session ===
+2026-09-05 22:56:16,947 INFO ipython import frappe
+2026-09-05 22:56:16,947 INFO ipython from erpnext.buying.doctype.purchase_order.mapper import make_purchase_receipt
+2026-09-05 22:56:16,947 INFO ipython from frappe.desk.form.save import savedocs
+2026-09-05 22:56:16,947 INFO ipython po='PUR-ORD-2026-00001'
+2026-09-05 22:56:16,947 INFO ipython doc=make_purchase_receipt(po)
+2026-09-05 22:56:16,947 INFO ipython try:
+    savedocs(doc.as_json(), 'Save')
+    print('SAVEDOCS_OK', frappe.db.exists('Purchase Receipt', doc.name))
+except Exception:
+    print(frappe.get_traceback())
+if doc.name and frappe.db.exists('Purchase Receipt', doc.name):
+    frappe.delete_doc('Purchase Receipt', doc.name, force=True, ignore_permissions=True)
+    frappe.db.commit()
+exit()
+2026-09-05 22:56:16,947 INFO ipython === session end ===
+2026-09-05 22:56:51,031 INFO ipython === bench console session ===
+2026-09-05 22:56:51,031 INFO ipython import frappe
+2026-09-05 22:56:51,031 INFO ipython from apparel_track.apparel_track.stock_automation import make_purchase_receipt
+2026-09-05 22:56:51,032 INFO ipython from frappe.desk.form.save import savedocs
+2026-09-05 22:56:51,032 INFO ipython doc = make_purchase_receipt('PUR-ORD-2026-00001')
+2026-09-05 22:56:51,032 INFO ipython print('MAPPED_NAME', doc.name, 'ISLOCAL', doc.get('__islocal'))
+2026-09-05 22:56:51,032 INFO ipython try:
+    savedocs(doc.as_json(), 'Save')
+    print('SAVED', frappe.db.exists('Purchase Receipt', doc.name))
+except Exception:
+    print(frappe.get_traceback())
+if doc.name and frappe.db.exists('Purchase Receipt', doc.name):
+    frappe.delete_doc('Purchase Receipt', doc.name, force=True, ignore_permissions=True)
+    frappe.db.commit()
+exit()
+2026-09-05 22:56:51,032 INFO ipython === session end ===
+2026-09-05 23:02:27,283 INFO ipython === bench console session ===
+2026-09-05 23:02:27,283 INFO ipython import frappe
+2026-09-05 23:02:27,283 INFO ipython print(frappe.get_hooks('override_whitelisted_methods').get('erpnext.buying.doctype.purchase_order.mapper.make_purchase_receipt'))
+2026-09-05 23:02:27,283 INFO ipython from apparel_track.apparel_track.stock_automation import make_purchase_receipt
+2026-09-05 23:02:27,283 INFO ipython x=make_purchase_receipt('PUR-ORD-2026-00001')
+2026-09-05 23:02:27,283 INFO ipython print(x.doctype, x.name, x.get('__islocal'), len(x.items))
+2026-09-05 23:02:27,283 INFO ipython === session end ===
+2026-09-05 23:02:51,660 INFO ipython === bench console session ===
+2026-09-05 23:02:51,660 INFO ipython import frappe
+2026-09-05 23:02:51,660 INFO ipython from frappe.model.mapper import make_mapped_doc
+2026-09-05 23:02:51,660 INFO ipython frappe.local.form_dict = frappe._dict(method='erpnext.buying.doctype.purchase_order.mapper.make_purchase_receipt', source_name='PUR-ORD-2026-00001', selected_children=None, args=None)
+2026-09-05 23:02:51,660 INFO ipython try:
+    result = make_mapped_doc()
+    print(result.doctype, result.name, result.get('__islocal'), len(result.items))
+except Exception:
+    print(frappe.get_traceback())
+exit()
+2026-09-05 23:02:51,660 INFO ipython === session end ===
+2026-09-05 23:03:01,316 INFO ipython === bench console session ===
+2026-09-05 23:03:01,316 INFO ipython from frappe.model.mapper import make_mapped_doc
+2026-09-05 23:03:01,316 INFO ipython try:
+    result = make_mapped_doc('erpnext.buying.doctype.purchase_order.mapper.make_purchase_receipt', 'PUR-ORD-2026-00001', None)
+    print(result.doctype, result.name, result.get('__islocal'), len(result.items))
+except Exception:
+    import frappe
+    print(frappe.get_traceback())
+exit()
+2026-09-05 23:03:01,316 INFO ipython === session end ===
+2026-09-05 23:08:51,714 INFO ipython === bench console session ===
+2026-09-05 23:08:51,715 INFO ipython import frappe
+2026-09-05 23:08:51,715 INFO ipython from apparel_track.apparel_track.stock_automation import make_purchase_receipt
+2026-09-05 23:08:51,715 INFO ipython from frappe.desk.form.save import savedocs
+2026-09-05 23:08:51,715 INFO ipython doc = make_purchase_receipt('PUR-ORD-2026-00001')
+2026-09-05 23:08:51,715 INFO ipython print('BEFORE', doc.name, doc.get('__islocal'))
+2026-09-05 23:08:51,715 INFO ipython try:
+    savedocs(doc.as_json(), 'Save')
+    print('AFTER_RESPONSE', frappe.response.docs[-1].get('name') if frappe.response.docs else None)
+    print('DB_NAMES', frappe.get_all('Purchase Receipt', fields=['name','docstatus','supplier'], order_by='modified desc', limit=5))
+except Exception:
+    print(frappe.get_traceback())
+exit()
+2026-09-05 23:08:51,715 INFO ipython === session end ===
+2026-09-05 23:09:05,367 INFO ipython === bench console session ===
+2026-09-05 23:09:05,368 INFO ipython import frappe
+2026-09-05 23:09:05,368 INFO ipython if frappe.db.exists('Purchase Receipt', 'MAT-PRE-2026-00001'):
+    frappe.delete_doc('Purchase Receipt', 'MAT-PRE-2026-00001', force=True, ignore_permissions=True)
+    frappe.db.commit()
+print('remaining', frappe.db.exists('Purchase Receipt', 'MAT-PRE-2026-00001'))
+2026-09-05 23:09:05,368 INFO ipython === session end ===
+2026-09-05 23:14:14,056 INFO ipython === bench console session ===
+2026-09-05 23:14:14,056 INFO ipython from erpnext.setup.install import create_shop_floor_roles
+2026-09-05 23:14:14,056 INFO ipython from erpnext.setup.setup_wizard.operations.install_fixtures import execute
+2026-09-05 23:14:14,056 INFO ipython print('ERPNext imports OK')
+2026-09-05 23:14:14,056 INFO ipython === session end ===
+2026-09-05 23:14:17,802 INFO ipython === bench console session ===
+2026-09-05 23:14:17,802 INFO ipython from erpnext.setup.install import create_shop_floor_roles
+2026-09-05 23:14:17,802 INFO ipython import erpnext.setup.setup_wizard.operations.install_fixtures
+2026-09-05 23:14:17,802 INFO ipython print('ERPNext imports OK')
+2026-09-05 23:14:17,802 INFO ipython === session end ===
+2026-09-05 23:17:35,995 INFO ipython === bench console session ===
+2026-09-05 23:17:35,995 INFO ipython import frappe
+2026-09-05 23:17:35,995 INFO ipython from frappe.model.mapper import make_mapped_doc
+2026-09-05 23:17:35,995 INFO ipython try:
+    result = make_mapped_doc('erpnext.buying.doctype.purchase_order.mapper.make_purchase_receipt', 'PUR-ORD-2026-00001', None)
+    print({'doctype': result.doctype, 'name': result.name, 'islocal': result.get('__islocal'), 'items': len(result.items)})
+except Exception:
+    print(frappe.get_traceback())
+exit()
+2026-09-05 23:17:35,996 INFO ipython === session end ===
+2026-09-05 23:18:09,377 INFO ipython === bench console session ===
+2026-09-05 23:18:09,377 INFO ipython from frappe.model.mapper import make_mapped_doc
+2026-09-05 23:18:09,377 INFO ipython result = make_mapped_doc('erpnext.buying.doctype.purchase_order.mapper.make_purchase_receipt', 'PUR-ORD-2026-00001', None)
+2026-09-05 23:18:09,377 INFO ipython print(result.doctype, result.name, result.get('__islocal'), len(result.items))
+2026-09-05 23:18:09,377 INFO ipython === session end ===
+2026-09-05 23:19:36,582 INFO ipython === bench console session ===
+2026-09-05 23:19:36,582 INFO ipython import frappe
+2026-09-05 23:19:36,582 INFO ipython meta=frappe.get_meta('Purchase Receipt')
+2026-09-05 23:19:36,582 INFO ipython print('fields', len(meta.fields), 'items', meta.get_field('items').options if meta.get_field('items') else None)
+2026-09-05 23:19:36,582 INFO ipython print('controller', frappe.get_attr('erpnext.stock.doctype.purchase_receipt.purchase_receipt.PurchaseReceipt'))
+2026-09-05 23:19:36,582 INFO ipython === session end ===
+2026-09-05 23:19:49,670 INFO ipython === bench console session ===
+2026-09-05 23:19:49,670 INFO ipython from apparel_track.apparel_track.stock_automation import make_purchase_receipt
+2026-09-05 23:19:49,670 INFO ipython x=make_purchase_receipt('PUR-ORD-2026-00001')
+2026-09-05 23:19:49,671 INFO ipython data=x.as_dict()
+2026-09-05 23:19:49,671 INFO ipython print('name', data.get('name'), 'doctype', data.get('doctype'), 'items', len(data.get('items', [])))
+2026-09-05 23:19:49,671 INFO ipython print('missing', [key for key in ('supplier','company','posting_date','items') if not data.get(key)])
+2026-09-05 23:19:49,671 INFO ipython print('item', data['items'][0].get('item_code'), data['items'][0].get('qty'), data['items'][0].get('warehouse'))
+2026-09-05 23:19:49,671 INFO ipython === session end ===
+2026-09-05 23:20:32,812 INFO ipython === bench console session ===
+2026-09-05 23:20:32,812 INFO ipython import frappe
+2026-09-05 23:20:32,812 INFO ipython from frappe.model.mapper import make_mapped_doc
+2026-09-05 23:20:32,812 INFO ipython from frappe.desk.form.save import savedocs
+2026-09-05 23:20:32,812 INFO ipython doc = make_mapped_doc('erpnext.buying.doctype.purchase_order.mapper.make_purchase_receipt', 'PUR-ORD-2026-00001', None)
+2026-09-05 23:20:32,812 INFO ipython print('MAPPED', doc.doctype, doc.name, doc.get('__islocal'), len(doc.items))
+2026-09-05 23:20:32,812 INFO ipython savedocs(doc.as_json(), 'Save')
+2026-09-05 23:20:32,812 INFO ipython print('SAVED', frappe.get_all('Purchase Receipt', fields=['name','docstatus','supplier'], order_by='modified desc', limit=1))
+2026-09-05 23:20:32,812 INFO ipython === session end ===
+2026-09-05 23:20:40,500 INFO ipython === bench console session ===
+2026-09-05 23:20:40,500 INFO ipython import frappe
+2026-09-05 23:20:40,500 INFO ipython if frappe.db.exists('Purchase Receipt', 'MAT-PRE-2026-00001'):
+    frappe.delete_doc('Purchase Receipt', 'MAT-PRE-2026-00001', force=True, ignore_permissions=True)
+    frappe.db.commit()
+print('verification draft removed')
+2026-09-05 23:20:40,500 INFO ipython === session end ===
+2026-09-05 23:25:46,654 INFO ipython === bench console session ===
+2026-09-05 23:25:46,655 INFO ipython import frappe
+2026-09-05 23:25:46,655 INFO ipython from frappe.model.mapper import make_mapped_doc
+2026-09-05 23:25:46,655 INFO ipython from frappe.desk.form.save import savedocs
+2026-09-05 23:25:46,655 INFO ipython for label, method in [
+    ('receipt', 'erpnext.buying.doctype.purchase_order.mapper.make_purchase_receipt'),
+    ('invoice', 'erpnext.buying.doctype.purchase_order.mapper.make_purchase_invoice'),
+]:
+    try:
+        doc = make_mapped_doc(method, 'PUR-ORD-2026-00001', None)
+        print(label, 'mapped', doc.doctype, doc.name, doc.get('__islocal'), len(doc.items))
+        savedocs(doc.as_json(), 'Save')
+        print(label, 'saved', frappe.get_all(doc.doctype, fields=['name', 'docstatus'], order_by='modified desc', limit=1))
+        if doc.name and frappe.db.exists(doc.doctype, doc.name):
+            frappe.delete_doc(doc.doctype, doc.name, force=True, ignore_permissions=True)
+            frappe.db.commit()
+    except Exception:
+        print(label, frappe.get_traceback())
+exit()
+2026-09-05 23:25:46,655 INFO ipython === session end ===
+2026-09-05 23:25:53,267 INFO ipython === bench console session ===
+2026-09-05 23:25:53,267 INFO ipython import frappe
+2026-09-05 23:25:53,267 INFO ipython for doctype, names in {
+    'Purchase Receipt': ['MAT-PRE-2026-00001'],
+    'Purchase Invoice': ['ACC-PINV-2026-00001'],
+}.items():
+    for name in names:
+        if frappe.db.exists(doctype, name):
+            frappe.delete_doc(doctype, name, force=True, ignore_permissions=True)
+frappe.db.commit()
+2026-09-05 23:25:53,267 INFO ipython print('test drafts removed')
+2026-09-05 23:25:53,267 INFO ipython === session end ===
+2026-09-05 23:27:11,072 INFO ipython === bench console session ===
+2026-09-05 23:27:11,072 INFO ipython import frappe
+2026-09-05 23:27:11,072 INFO ipython from frappe.model.mapper import make_mapped_doc
+2026-09-05 23:27:11,072 INFO ipython from frappe.desk.form.save import savedocs
+2026-09-05 23:27:11,072 INFO ipython doc=make_mapped_doc('erpnext.buying.doctype.purchase_order.mapper.make_purchase_receipt','PUR-ORD-2026-00001',None)
+2026-09-05 23:27:11,072 INFO ipython print('before', doc.name, doc.get('__islocal'))
+2026-09-05 23:27:11,073 INFO ipython try:
+    savedocs(doc.as_json(), 'Save')
+    print('after', frappe.get_all('Purchase Receipt', fields=['name','docstatus'], order_by='modified desc', limit=1))
+except Exception:
+    print(frappe.get_traceback())
+exit()
+2026-09-05 23:27:11,073 INFO ipython === session end ===
+2026-09-05 23:28:31,623 INFO ipython === bench console session ===
+2026-09-05 23:28:31,624 INFO ipython import frappe
+2026-09-05 23:28:31,624 INFO ipython from frappe.model.mapper import make_mapped_doc
+2026-09-05 23:28:31,624 INFO ipython from frappe.desk.form.save import savedocs
+2026-09-05 23:28:31,624 INFO ipython orders = frappe.get_all(
+    'Purchase Order',
+    filters={'supplier': 'Test Supplier', 'docstatus': 1},
+    fields=['name', 'status', 'per_received', 'transaction_date'],
+    order_by='modified desc',
+    limit=5,
+)
+2026-09-05 23:28:31,624 INFO ipython print('ORDERS', orders)
+2026-09-05 23:28:31,624 INFO ipython if orders:
+    order = orders[0].name
+    receipt = make_mapped_doc(
+        'erpnext.buying.doctype.purchase_order.mapper.make_purchase_receipt',
+        order,
+        None,
+    )
+    print('MAPPED', receipt.doctype, receipt.name, receipt.get('__islocal'), len(receipt.items))
+    savedocs(receipt.as_json(), 'Save')
+    saved = frappe.get_all(
+        'Purchase Receipt',
+        filters={'supplier': 'Test Supplier', 'docstatus': 0},
+        fields=['name', 'supplier', 'posting_date', 'docstatus', 'modified'],
+        order_by='modified desc',
+        limit=1,
+    )
+    print('SAVED', saved)
+exit()
+2026-09-05 23:28:31,624 INFO ipython === session end ===
+2026-09-05 23:35:12,002 INFO ipython === bench console session ===
+2026-09-05 23:35:12,002 INFO ipython import frappe
+2026-09-05 23:35:12,002 INFO ipython for name in frappe.get_all('Purchase Receipt', pluck='name', order_by='modified desc', limit=5):
+    doc=frappe.get_doc('Purchase Receipt', name)
+    print(name, doc.supplier, doc.company, doc.posting_date, len(doc.items))
+    for item in doc.items:
+        print(' ', item.item_code, item.qty, item.warehouse, item.purchase_order, item.purchase_order_item)
+exit()
+2026-09-05 23:35:12,002 INFO ipython === session end ===
+2026-09-05 23:35:44,032 INFO ipython === bench console session ===
+2026-09-05 23:35:44,032 INFO ipython import frappe
+2026-09-05 23:35:44,032 INFO ipython from frappe.model.mapper import make_mapped_doc
+2026-09-05 23:35:44,032 INFO ipython from frappe.desk.form.save import savedocs
+2026-09-05 23:35:44,032 INFO ipython receipt = make_mapped_doc(
+    'erpnext.buying.doctype.purchase_order.mapper.make_purchase_receipt',
+    'PUR-ORD-2026-00001',
+    None,
+)
+2026-09-05 23:35:44,032 INFO ipython savedocs(receipt.as_json(), 'Save')
+2026-09-05 23:35:44,032 INFO ipython print('CREATED', frappe.response.docs[-1]['name'])
+2026-09-05 23:35:44,032 INFO ipython === session end ===
+2026-09-05 23:36:09,420 INFO ipython === bench console session ===
+2026-09-05 23:36:09,420 INFO ipython import frappe
+2026-09-05 23:36:09,420 INFO ipython from frappe.model.mapper import make_mapped_doc
+2026-09-05 23:36:09,420 INFO ipython from frappe.desk.form.save import savedocs
+2026-09-05 23:36:09,420 INFO ipython receipt = make_mapped_doc('erpnext.buying.doctype.purchase_order.mapper.make_purchase_receipt', 'PUR-ORD-2026-00001', None)
+2026-09-05 23:36:09,420 INFO ipython savedocs(receipt.as_json(), 'Save')
+2026-09-05 23:36:09,420 INFO ipython frappe.db.commit()
+2026-09-05 23:36:09,420 INFO ipython print('COMMITTED', frappe.db.exists('Purchase Receipt', 'MAT-PRE-2026-00001'))
+2026-09-05 23:36:09,420 INFO ipython === session end ===
+2026-09-05 23:36:18,841 INFO ipython === bench console session ===
+2026-09-05 23:36:18,841 INFO ipython import frappe
+2026-09-05 23:36:18,841 INFO ipython receipt = frappe.get_doc('Purchase Receipt', 'MAT-PRE-2026-00001')
+2026-09-05 23:36:18,841 INFO ipython print(receipt.name, receipt.supplier, receipt.company, receipt.posting_date, len(receipt.items))
+2026-09-05 23:36:18,841 INFO ipython print(receipt.items[0].item_code, receipt.items[0].qty, receipt.items[0].warehouse, receipt.items[0].purchase_order)
+2026-09-05 23:36:18,841 INFO ipython === session end ===
+2026-09-05 23:39:01,057 INFO ipython === bench console session ===
+2026-09-05 23:39:01,057 INFO ipython import frappe
+2026-09-05 23:39:01,057 INFO ipython receipt = frappe.get_doc('Purchase Receipt', 'MAT-PRE-2026-00001')
+2026-09-05 23:39:01,057 INFO ipython print('HEADER', receipt.name, receipt.docstatus, receipt.supplier, receipt.company, receipt.posting_date)
+2026-09-05 23:39:01,057 INFO ipython for item in receipt.items:
+    print('ITEM', item.item_code, item.qty, item.warehouse, item.purchase_order, item.purchase_order_item)
+exit()
+2026-09-05 23:39:01,057 INFO ipython === session end ===
+2026-09-05 23:40:30,164 INFO ipython === bench console session ===
+2026-09-05 23:40:30,164 INFO ipython import frappe
+2026-09-05 23:40:30,165 INFO ipython from frappe.model.mapper import make_mapped_doc
+2026-09-05 23:40:30,165 INFO ipython from frappe.desk.form.save import savedocs
+2026-09-05 23:40:30,165 INFO ipython from frappe.utils import today
+2026-09-05 23:40:30,165 INFO ipython source = frappe.get_doc('Purchase Order', 'PUR-ORD-2026-00001')
+2026-09-05 23:40:30,165 INFO ipython po = frappe.new_doc('Purchase Order')
+2026-09-05 23:40:30,165 INFO ipython po.supplier = source.supplier
+2026-09-05 23:40:30,165 INFO ipython po.company = source.company
+2026-09-05 23:40:30,166 INFO ipython po.transaction_date = today()
+2026-09-05 23:40:30,166 INFO ipython po.schedule_date = today()
+2026-09-05 23:40:30,166 INFO ipython po.currency = source.currency
+2026-09-05 23:40:30,166 INFO ipython po.buying_price_list = source.buying_price_list
+2026-09-05 23:40:30,166 INFO ipython po.append('items', {
+    'item_code': source.items[0].item_code,
+    'qty': 2,
+    'rate': source.items[0].rate,
+    'warehouse': source.items[0].warehouse,
+    'schedule_date': today(),
+})
+2026-09-05 23:40:30,166 INFO ipython po.insert(ignore_permissions=True)
+2026-09-05 23:40:30,166 INFO ipython po.submit()
+2026-09-05 23:40:30,166 INFO ipython frappe.db.commit()
+2026-09-05 23:40:30,166 INFO ipython print('PO_CREATED', po.name, po.status, po.items[0].item_code, po.items[0].qty)
+2026-09-05 23:40:30,166 INFO ipython receipt = make_mapped_doc(
+    'erpnext.buying.doctype.purchase_order.mapper.make_purchase_receipt',
+    po.name,
+    None,
+)
+2026-09-05 23:40:30,166 INFO ipython savedocs(receipt.as_json(), 'Save')
+2026-09-05 23:40:30,166 INFO ipython frappe.db.commit()
+2026-09-05 23:40:30,166 INFO ipython receipt_name = frappe.response.docs[-1]['name']
+2026-09-05 23:40:30,167 INFO ipython print('RECEIPT_CREATED', receipt_name)
+2026-09-05 23:40:30,167 INFO ipython saved = frappe.get_doc('Purchase Receipt', receipt_name)
+2026-09-05 23:40:30,167 INFO ipython print('RECEIPT_HEADER', saved.name, saved.docstatus, saved.supplier, saved.company, len(saved.items))
+2026-09-05 23:40:30,167 INFO ipython for item in saved.items:
+    print('RECEIPT_ITEM', item.item_code, item.qty, item.warehouse, item.purchase_order, item.purchase_order_item)
+exit()
+2026-09-05 23:40:30,167 INFO ipython === session end ===
+2026-09-07 01:25:13,919 INFO ipython === bench console session ===
+2026-09-07 01:25:13,919 INFO ipython import frappe
+2026-09-07 01:25:13,919 INFO ipython print(frappe.get_all('Workspace', filters={'name':'Buying'}, fields=['name','label','module','custom']))
+2026-09-07 01:25:13,919 INFO ipython ws = frappe.get_doc('Workspace', 'Buying')
+2026-09-07 01:25:13,919 INFO ipython print(ws.as_dict().keys())
+2026-09-07 01:25:13,919 INFO ipython print('links', [x.as_dict() for x in ws.links])
+2026-09-07 01:25:13,919 INFO ipython === session end ===
+2026-09-07 01:25:27,676 INFO ipython === bench console session ===
+2026-09-07 01:25:27,676 INFO ipython import frappe
+2026-09-07 01:25:27,676 INFO ipython ws = frappe.get_doc('Workspace', 'Buying')
+2026-09-07 01:25:27,676 INFO ipython if not any(link.label == 'Supplier Performance' for link in ws.links):
+    ws.append('links', {
+        'type': 'Link',
+        'label': 'Supplier Performance',
+        'link_type': 'Dashboard',
+        'link_to': 'Supplier Performance',
+        'hidden': 0,
+    })
+    ws.save(ignore_permissions=True)
+    frappe.db.commit()
+    print('Added Supplier Performance link to Buying workspace')
+else:
+    print('Link already exists')
+frappe.clear_cache()
+2026-09-07 01:25:27,676 INFO ipython === session end ===
+2026-09-07 01:25:41,575 INFO ipython === bench console session ===
+2026-09-07 01:25:41,575 INFO ipython import frappe
+2026-09-07 01:25:41,575 INFO ipython === session end ===
+2026-09-07 02:09:10,895 INFO ipython === bench console session ===
+2026-09-07 02:09:10,897 INFO ipython import frappe
+2026-09-07 02:09:10,897 INFO ipython item_name = "Test Item 1"
+2026-09-07 02:09:10,897 INFO ipython warehouse = "Stores - AT"
+2026-09-07 02:09:10,897 INFO ipython item_barcode = "TEST-ITEM-001"
+2026-09-07 02:09:10,897 INFO ipython bin_id = "TEST-BIN-001"
+2026-09-07 02:09:10,897 INFO ipython bin_barcode = "TEST-BIN-001-QR"
+2026-09-07 02:09:10,897 INFO ipython item = frappe.get_doc("Item", item_name)
+2026-09-07 02:09:10,897 INFO ipython if not any(row.barcode == item_barcode for row in item.barcodes):
+    item.append("barcodes", {"barcode": item_barcode, "barcode_type": "Code-128"})
+    item.save(ignore_permissions=True)
+2026-09-07 02:09:10,897 INFO ipython bin_name = frappe.db.get_value("Storage Bin", {"bin_id": bin_id})
+2026-09-07 02:09:10,897 INFO ipython if bin_name:
+    bin_doc = frappe.get_doc("Storage Bin", bin_name)
+    bin_doc.warehouse = warehouse
+    bin_doc.current_item = item_name
+    bin_doc.barcode_qr_code = bin_barcode
+    bin_doc.save(ignore_permissions=True)
+else:
+    bin_doc = frappe.get_doc({
+        "doctype": "Storage Bin",
+        "bin_id": bin_id,
+        "warehouse": warehouse,
+        "current_item": item_name,
+        "max_capacity": 10000,
+        "barcode_qr_code": bin_barcode,
+    }).insert(ignore_permissions=True)
+2026-09-07 02:09:10,898 INFO ipython stock_entry = frappe.get_doc({
+    "doctype": "Stock Entry",
+    "stock_entry_type": "Material Receipt",
+    "company": "Apparel Tracking",
+    "items": [{
+        "item_code": item_name,
+        "qty": 1,
+        "uom": item.stock_uom,
+        "stock_uom": item.stock_uom,
+        "conversion_factor": 1,
+        "t_warehouse": warehouse,
+        "basic_rate": 100,
+    }],
+}).insert(ignore_permissions=True)
+2026-09-07 02:09:10,898 INFO ipython frappe.db.commit()
+2026-09-07 02:09:10,898 INFO ipython print({
+    "item": item_name,
+    "item_barcode": item_barcode,
+    "storage_bin": bin_doc.name,
+    "bin_barcode": bin_barcode,
+    "stock_entry": stock_entry.name,
+    "warehouse": warehouse,
+    "status": stock_entry.docstatus,
+})
+2026-09-07 02:09:10,898 INFO ipython === session end ===
+2026-09-07 02:31:04,185 INFO ipython === bench console session ===
+2026-09-07 02:31:04,185 INFO ipython import frappe
+2026-09-07 02:31:04,185 INFO ipython page = frappe.get_doc('Page', 'supplier-performance-dashboard')
+2026-09-07 02:31:04,185 INFO ipython print(page.as_dict())
+2026-09-07 02:31:04,185 INFO ipython === session end ===
+2026-09-07 02:32:05,202 INFO ipython === bench console session ===
+2026-09-07 02:32:05,203 INFO ipython import frappe
+2026-09-07 02:32:05,203 INFO ipython if frappe.db.exists('Page', 'supplier-performance'):
+    frappe.delete_doc('Page', 'supplier-performance', ignore_permissions=True)
+    frappe.db.commit()
+exit()
+2026-09-07 02:32:05,203 INFO ipython === session end ===

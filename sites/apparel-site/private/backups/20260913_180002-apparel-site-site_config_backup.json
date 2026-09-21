@@ -1,4 +1,5 @@
 {
+ "allow_tests": true,
  "db_name": "_9e4e7f14c0c45490",
  "db_password": "xi7PDtw7LPKH3wpE",
  "db_type": "mariadb",

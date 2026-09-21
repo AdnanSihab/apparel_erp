@@ -1,0 +1,18 @@
+2026-09-03 01:19:49,107 INFO frappe.testing started with: site=apparel-site, app=apparel_track, verbose=False, tests=(), force=False, profile=False, junit_xml_output=/tmp/apparel_track_tests.xml, failfast=False, skip_before_tests=False, debug=False, selected_categories=[]
+2026-09-03 01:19:53,274 INFO frappe.testing started with: site=apparel-site, app=apparel_track, verbose=False, tests=(), force=False, profile=False, failfast=True, skip_before_tests=False, debug=False, selected_categories=[]
+2026-09-03 01:20:28,072 INFO frappe.testing started with: site=apparel-site, doctype=Stock Entry, verbose=False, tests=(), force=False, profile=False, failfast=True, skip_before_tests=False, debug=False, selected_categories=integration
+2026-09-03 01:20:28,404 ERROR frappe.testing Error discovering tests for Stock Entry: 'MariaDBDatabase' object has no attribute 'advisory_lock'
+2026-09-03 01:20:31,997 INFO frappe.testing started with: site=apparel-site, doctype=Material Request, verbose=False, tests=(), force=False, profile=False, failfast=True, skip_before_tests=False, debug=False, selected_categories=integration
+2026-09-03 01:20:32,409 ERROR frappe.testing Error discovering tests for Material Request: 'MariaDBDatabase' object has no attribute 'advisory_lock'
+2026-09-07 02:13:17,431 INFO frappe.testing started with: site=apparel-site, app=apparel_track, verbose=False, tests=(), force=False, profile=False, failfast=False, skip_before_tests=False, debug=False, selected_categories=[]
+2026-09-07 02:13:17,707 INFO frappe.testing Running "before_tests" hooks for integration tests on app: apparel_track
+2026-09-07 02:13:17,707 INFO frappe.testing Starting tests for app: apparel_track, category: integration
+2026-09-07 02:13:29,339 INFO frappe.testing started with: site=apparel-site, module=apparel_track.apparel_track.doctype.storage_bin.test_storage_bin, verbose=False, tests=(), force=False, profile=False, failfast=False, skip_before_tests=False, debug=False, selected_categories=[]
+2026-09-07 02:13:29,623 INFO frappe.testing Running "before_tests" hooks for integration tests on app: apparel_track
+2026-09-07 02:13:29,623 INFO frappe.testing Starting tests for app: apparel_track, category: integration
+2026-09-07 02:13:40,153 INFO frappe.testing started with: site=apparel-site, module=apparel_track.apparel_track.doctype.storage_bin.test_storage_bin, verbose=False, tests=(), force=False, profile=False, failfast=False, skip_before_tests=False, debug=False, selected_categories=[]
+2026-09-07 02:13:40,465 INFO frappe.testing Running "before_tests" hooks for integration tests on app: apparel_track
+2026-09-07 02:13:40,466 INFO frappe.testing Starting tests for app: apparel_track, category: integration
+2026-09-07 02:13:44,430 INFO frappe.testing started with: site=apparel-site, module=apparel_track.apparel_track.doctype.storage_bin.test_storage_bin, verbose=False, tests=(), force=False, profile=False, failfast=False, skip_before_tests=False, debug=False, selected_categories=[]
+2026-09-07 02:13:44,713 INFO frappe.testing Running "before_tests" hooks for integration tests on app: apparel_track
+2026-09-07 02:13:44,714 INFO frappe.testing Starting tests for app: apparel_track, category: integration
