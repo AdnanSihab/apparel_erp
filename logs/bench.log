@@ -478,3 +478,14 @@
 2026-09-21 20:44:24,741 INFO /home/user/.local/bin/bench --site apparel-site execute apparel_track._rehearse.run
 2026-09-21 20:44:51,295 INFO /home/user/.local/bin/bench --site apparel-site run-tests --app apparel_track
 2026-09-21 21:02:36,145 INFO /home/user/.local/bin/bench --site apparel-site run-tests --app apparel_track
+2026-09-21 21:09:36,144 INFO /home/user/.local/bin/bench --site apparel-site execute apparel_track._insp.run
+2026-09-21 21:09:57,414 INFO /home/user/.local/bin/bench --site apparel-site execute apparel_track._rehearse.run
+2026-09-21 21:12:40,930 INFO /home/user/.local/bin/bench --site apparel-site execute apparel_track.tests.seed_demo_data.seed --kwargs {'reset': True}
+2026-09-21 21:13:13,409 INFO /home/user/.local/bin/bench --site apparel-site execute apparel_track._rehearse.run
+2026-09-21 21:13:38,411 INFO /home/user/.local/bin/bench --site apparel-site run-tests --app apparel_track
+2026-09-21 21:13:44,721 INFO /home/user/.local/bin/bench --site apparel-site execute apparel_track.tests.demo_scenarios.run --kwargs {'color': False}
+2026-09-21 21:19:14,123 INFO /home/user/.local/bin/bench --site apparel-site execute apparel_track.tests.seed_demo_data.seed --kwargs {'reset': True}
+2026-09-21 21:19:46,717 INFO /home/user/.local/bin/bench --site apparel-site execute apparel_track.tests.seed_demo_data.seed --kwargs {'reset': True}
+2026-09-21 21:20:26,535 INFO /home/user/.local/bin/bench --site apparel-site execute apparel_track._verify.run
+2026-09-21 21:20:49,004 INFO /home/user/.local/bin/bench --site apparel-site execute apparel_track._e.run
+2026-09-21 21:25:58,692 INFO /home/user/.local/bin/bench --site apparel-site execute apparel_track._c.run

@@ -50,3 +50,9 @@
 2026-09-21 21:02:40,544 INFO frappe.testing Starting tests for app: apparel_track, category: unspecified-category
 2026-09-21 21:02:40,545 INFO frappe.testing apparel_track.tests.test_rules.TestReliabilityScore
 2026-09-21 21:02:40,545 INFO frappe.testing apparel_track.tests.test_rules.TestReorderLevelFormula
+2026-09-21 21:13:38,756 INFO frappe.testing started with: site=apparel-site, app=apparel_track, verbose=False, tests=(), force=False, profile=False, failfast=False, skip_before_tests=False, debug=False, selected_categories=[]
+2026-09-21 21:13:39,208 INFO frappe.testing Starting tests for app: apparel_track, category: unit
+2026-09-21 21:13:39,209 INFO frappe.testing apparel_track.tests.test_table_10_1.TestTable10_1
+2026-09-21 21:13:44,409 INFO frappe.testing Starting tests for app: apparel_track, category: unspecified-category
+2026-09-21 21:13:44,410 INFO frappe.testing apparel_track.tests.test_rules.TestReliabilityScore
+2026-09-21 21:13:44,410 INFO frappe.testing apparel_track.tests.test_rules.TestReorderLevelFormula
